@@ -1,0 +1,39 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "g++.exe",
+            "command": "C:\\msys64\\mingw64\\bin\\g++.exe", 
+            "args": [
+                "-std=c++17",
+                "-ggdb",
+                "-I", "C:\\VulkanSDK\\1.3.204.1\\Include",
+                "-I", "C:\\Project\\Libraries\\glfw-3.3.6.bin.WIN64\\include",
+                "-I", "C:\\Project\\Libraries\\glm-0.9.9.8\\glm",
+                "-I", "C:\\Project\\headers",
+                "-L", "C:\\VulkanSDK\\1.3.204.1\\Lib",
+                "-L", "C:\\Project\\Libraries\\glfw-3.3.6.bin.WIN64\\lib-mingw-w64",
+                "${file}",
+                "-l:vulkan-1.lib",
+                "-lglfw3",
+                "-lopengl32",
+                "-lgdi32",
+                "-luser32", 
+                "-lkernel32",
+                "-o", "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Attività generata dal debugger."
+        }
+    ],
+    "version": "2.0.0"
+}

@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "vulkan",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\VulkanSDK\\1.3.204.1\\Include",
+                "C:\\Project\\Libraries\\glfw-3.3.6.bin.WIN64\\include",
+                "C:\\Project\\Libraries\\glm-0.9.9.8\\glm",
+                "C:\\Project\\headers"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
