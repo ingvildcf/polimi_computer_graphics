@@ -19,21 +19,21 @@ void makeModels() {
 // vertices
 M1_vertices.resize(4);
 
-// first vertex of M1
+// first vertex of M1 (left bottom front)
 M1_vertices[0].pos  = glm::vec3(-1.0,-1.0,-1.0);
-M1_vertices[0].norm = glm::vec3(0.0,0.0,1.0);
+M1_vertices[0].norm = glm::vec3(0.0,0.0,-1.0);
 
-// second vertex of M1
+// second vertex of M1 (right bottom front)
 M1_vertices[1].pos  = glm::vec3(1.0,-1.0,-1.0);
-M1_vertices[1].norm = glm::vec3(0.0,0.0,1.0);
+M1_vertices[1].norm = glm::vec3(0.0,0.0,-1.0);
 
-// third vertex of M1
+// third vertex of M1 (right top front)
 M1_vertices[2].pos  = glm::vec3(1.0,1.0,-1.0);
-M1_vertices[2].norm = glm::vec3(0.0,0.0,1.0);
+M1_vertices[2].norm = glm::vec3(0.0,0.0,-1.0);
 
-// fourth vertex of M1
+// fourth vertex of M1 (left top front)
 M1_vertices[3].pos  = glm::vec3(-1.0,1.0,-1.0);
-M1_vertices[3].norm = glm::vec3(0.0,0.0,1.0);
+M1_vertices[3].norm = glm::vec3(0.0,0.0,-1.0);
 
 
 // Resizes the indices array. Repalce the values with the correct number of

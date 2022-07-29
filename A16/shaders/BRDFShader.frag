@@ -1,4 +1,5 @@
-#version 450#extension GL_ARB_separate_shader_objects : enable
+#version 450
+#extension GL_ARB_separate_shader_objects : enable
 
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 fragNorm;
@@ -27,12 +28,14 @@ layout(binding = 2) uniform GlobalUniformBufferObject {
 vec3 Lambert_Diffuse_BRDF(vec3 L, vec3 N, vec3 V, vec3 C) {
 	// Lambert Diffuse BRDF model
 	// in all BRDF parameters are:
-	// vec3 L : light direction
-	// vec3 N : normal vector
-	// vec3 V : view direction
+	// vec3 L : light direction (d)
+	// vec3 N : normal vector (n_x)
+	// vec3 V : view direction (omega_r) - independent
 	// vec3 C : main color (diffuse color, or specular color)
 	
-	return C;
+	float cos_alpha = dot(N, L); // angle between N and L
+
+	return C * max(cos_alpha, 0);
 }
 
 vec3 Oren_Nayar_Diffuse_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, float sigma) {
@@ -40,7 +43,24 @@ vec3 Oren_Nayar_Diffuse_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, float sigma) {
 	// additional parameter:
 	// float sigma : roughness of the material
 
-	return C;
+	float A = 1 - 0.5*pow(sigma, 2)/(pow(sigma, 2) + 0.33);
+	float B = 0.45*pow(sigma, 2)/(pow(sigma, 2) + 0.09);
+	
+	float theta_i = radians(pow(cos(dot(L, N)), -1)); // ang between d (L) and n
+	float theta_r = radians(pow(cos(dot(V, N)), -1)); // ang between omega_r (V) and n
+	
+	float alpha = max(theta_i, theta_r);
+	float beta = min(theta_i, theta_r);
+
+	// Projections of omega_r (V) and d (L) on the plane perpendicular to n
+	vec3 v_r = normalize(V - (dot(V, N))*N);
+	vec3 v_i = normalize(L - (dot(L, N))*N);
+
+	float G = max(0, dot(v_i, v_r)); // cos(gamma), gamma = ang between v_r and v_i
+
+	vec3 l = C * clamp(dot(L, N), 0, 1);
+
+	return l*(A+B*G*sin(alpha)*tan(beta));
 }
 
 vec3 Phong_Specular_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, float gamma)  {
@@ -48,7 +68,11 @@ vec3 Phong_Specular_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, float gamma)  {
 	// additional parameter:
 	// float gamma : exponent of the cosine term
 	
-	return vec3(0,0,0);
+	vec3 R = -reflect(L, N); // = 2*N.dot(L.dot(N)) - L; // reflection
+	
+	float cos_alpha = pow(clamp(dot(V, R), 0, 1), gamma);
+
+	return C*cos_alpha;
 }
 
 vec3 Toon_Diffuse_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, vec3 Cd, float thr) {
@@ -56,8 +80,19 @@ vec3 Toon_Diffuse_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, vec3 Cd, float thr) {
 	// additional parameters:
 	// vec3 Cd : color to be used in dark areas
 	// float thr : color threshold
+
+	vec3 f_diffuse = vec3(0.0f); // Darkest areas
 	
-	return C;
+	float LN = dot(L, N);
+
+	if (LN > 0 && LN < thr){
+		f_diffuse = Cd; // Dark areas
+	}
+	else if (LN >= thr){ 
+		f_diffuse = C; // Light areas
+	}
+
+	return f_diffuse;
 }
 
 vec3 Toon_Specular_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, float thr)  {
@@ -65,8 +100,16 @@ vec3 Toon_Specular_BRDF(vec3 L, vec3 N, vec3 V, vec3 C, float thr)  {
 	// additional parameter:
 	// float thr : color threshold
 
-	return vec3(0,0,0);
-}
+	vec3 R = -reflect(L, N); //2*N*dot(L, N) - L;
+
+	vec3 f_specular = C; // Light areas
+
+	if (dot(V, R) < thr){
+		f_specular = vec3(0.0f); // Dark areas
+	}
+
+	return f_specular;
+}	
 
 
 /**** To here *****/

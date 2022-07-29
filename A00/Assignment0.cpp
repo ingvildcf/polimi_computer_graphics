@@ -20,7 +20,6 @@ il cubo dello SkyBox
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
-#include <cstdlib>
 #include <vector>
 #include <cstring>
 #include <optional>

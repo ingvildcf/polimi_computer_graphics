@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Light models and BRDFs</title>
+        <script src="lib/model1.js"></script>
+        <script src="lib/texture1.js"></script>
+        <script src="lib/model2.js"></script>
+        <script src="lib/texture2.js"></script>
+        <script src="lib/model3.js"></script>
+        <script src="lib/texture3.js"></script>
+        <script src="lib/webgl-obj-loader.min.js"></script>
+		<script src="lib/utils.js"></script>
+		<script src="lib/app.js"></script>
+	</head>
+	
+	<body style="background-color: grey;" onLoad="main();">
+		<canvas id="my-canvas" width='800' height='450' style="background-color: black;">
+			Your browser doesn't support the Canvas Element!
+		</canvas>
+		<center>
+			<table border="1">
+			  <tr><td><span onclick="toggleExtView();">Toggle Ext. View</span></td>
+			  <td colspan="3">Rotate Model<input type="range" min="-180" max="180" value="0" id="modRot"></td>
+			  <td colspan="3"><div style="text-align:center">
+			  		<span onclick="setWorldMesh();">World</span> -
+			  		<span onclick="setXwingMesh();">Starship</span> -
+			  		<span onclick="setHouseMesh();">House</span> -
+			  		<span onclick="resetShaderParams();">Reset</span>
+			  	  </div></td></tr>
+			  <tr>
+				<td><div style="text-align:center"><select id="lightEditNo" onchange="showLight(this.value);">
+				  <option value="LA">Light A</option>
+				  <option value="LB">Light B</option>
+				  <option value="LC">Light C</option>
+				</select></div></td>
+				<th colspan="2">Ambient</th>
+				<th colspan="2">Diffuse</th>
+				<th colspan="2">Specular</th>
+			  </tr>
+			  <tr>
+			  	<td rowspan="6">
+			<div id="LA">
+			 <table border="1">
+			  <tr>
+			  	<td><div id="LA11"><b>Type</b></div></td>
+			  	<td><div id="LA12"><select id="LAlightType" onchange="showHideUI(this.id,this.value);">
+				  <option value="none">None</option>
+				  <option value="direct">Direct</option>
+				  <option value="point">Point</option>
+				  <option value="spot">Spot</option>
+				</select></div></td>
+			  	<td><div id="LA13">Color</div></td>
+			  	<td><div id="LA14"><input type="color" id="LAlightColor" value="#ffffff"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LA21">Pos <i>x</i></div></td>
+			  	<td><div id="LA22"><input type="range" min="-250" max="250" id="LAPosX"></div></td>
+			  	<td><div id="LA23">Decay &beta;</div></td>
+			  	<td><div id="LA24"><input type="range" min="0" max="2" id="LADecay"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LA31">Pos <i>y</i></div></td>
+			  	<td><div id="LA32"><input type="range" min="-250" max="250" id="LAPosY"></div></td>
+			  	<td><div id="LA33">Target dist. <i>g</i></div></td>
+			  	<td><div id="LA34"><input type="range" min="0" max="100" id="LATarget"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LA41">Pos <i>z</i></div></td>
+			  	<td><div id="LA42"><input type="range" min="-250" max="250" id="LAPosZ"></div></td>
+			  	<td><div id="LA43">Cone <i>out</i></div></td>
+			  	<td><div id="LA44"><input type="range" min="0" max="150" id="LAConeOut"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LA51">Dir &theta;</div></td>
+			  	<td><div id="LA52"><input type="range" min="0" max="180" id="LADirTheta"></div></td>
+			  	<td><div id="LA53">Cone <i>in</i></div></td>
+			  	<td><div id="LA54"><input type="range" min="0" max="100" id="LAConeIn"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LA61">Dir &phi;</div></td>
+			  	<td><div id="LA62"><input type="range" min="-180" max="180" id="LADirPhi"></div></td>
+			  	<td colspan="2">&nbsp;</td>
+			  </tr>
+			 </table>
+			</div>
+			<div id="LB" style="display:none">
+			 <table border="1">
+			  <tr>
+			  	<td><div id="LB11"><b>Type</b></div></td>
+			  	<td><div id="LB12"><select id="LBlightType" onchange="showHideUI(this.id,this.value);">
+				  <option value="none">None</option>
+				  <option value="direct">Direct</option>
+				  <option value="point">Point</option>
+				  <option value="spot">Spot</option>
+				</select></div></td>
+			  	<td><div id="LB13">Color</div></td>
+			  	<td><div id="LB14"><input type="color" id="LBlightColor" value="#ffffff"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LB21">Pos <i>x</i></div></td>
+			  	<td><div id="LB22"><input type="range" min="-250" max="250" id="LBPosX"></div></td>
+			  	<td><div id="LB23">Decay &beta;</div></td>
+			  	<td><div id="LB24"><input type="range" min="0" max="2" id="LBDecay"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LB31">Pos <i>y</i></div></td>
+			  	<td><div id="LB32"><input type="range" min="-250" max="250" id="LBPosY"></div></td>
+			  	<td><div id="LB33">Target dist. <i>g</i></div></td>
+			  	<td><div id="LB34"><input type="range" min="0" max="100" id="LBTarget"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LB41">Pos <i>z</i></div></td>
+			  	<td><div id="LB42"><input type="range" min="-250" max="250" id="LBPosZ"></div></td>
+			  	<td><div id="LB43">Cone <i>out</i></div></td>
+			  	<td><div id="LB44"><input type="range" min="0" max="150" id="LBConeOut"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LB51">Dir &theta;</div></td>
+			  	<td><div id="LB52"><input type="range" min="0" max="180" id="LBDirTheta"></div></td>
+			  	<td><div id="LB53">Cone <i>in</i></div></td>
+			  	<td><div id="LB54"><input type="range" min="0" max="100" id="LBConeIn"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LB61">Dir &phi;</div></td>
+			  	<td><div id="LB62"><input type="range" min="-180" max="180" id="LBDirPhi"></div></td>
+			  	<td colspan="2">&nbsp;</td>
+			  </tr>
+			 </table>
+			</div>
+			<div id="LC" style="display:none">
+			 <table border="1">
+			  <tr>
+			  	<td><div id="LC11"><b>Type</b></div></td>
+			  	<td><div id="LC12"><select id="LClightType" onchange="showHideUI(this.id,this.value);">
+				  <option value="none">None</option>
+				  <option value="direct">Direct</option>
+				  <option value="point">Point</option>
+				  <option value="spot">Spot</option>
+				</select></div></td>
+			  	<td><div id="LC13">Color</div></td>
+			  	<td><div id="LC14"><input type="color" id="LClightColor" value="#ffffff"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LC21">Pos <i>x</i></div></td>
+			  	<td><div id="LC22"><input type="range" min="-250" max="250" id="LCPosX"></div></td>
+			  	<td><div id="LC23">Decay &beta;</div></td>
+			  	<td><div id="LC24"><input type="range" min="0" max="2" id="LCDecay"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LC31">Pos <i>y</i></div></td>
+			  	<td><div id="LC32"><input type="range" min="-250" max="250" id="LCPosY"></div></td>
+			  	<td><div id="LC33">Target dist. <i>g</i></div></td>
+			  	<td><div id="LC34"><input type="range" min="0" max="100" id="LCTarget"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LC41">Pos <i>z</i></div></td>
+			  	<td><div id="LC42"><input type="range" min="-250" max="250" id="LCPosZ"></div></td>
+			  	<td><div id="LC43">Cone <i>out</i></div></td>
+			  	<td><div id="LC44"><input type="range" min="0" max="150" id="LCConeOut"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LC51">Dir &theta;</div></td>
+			  	<td><div id="LC52"><input type="range" min="0" max="180" id="LCDirTheta"></div></td>
+			  	<td><div id="LC53">Cone <i>in</i></div></td>
+			  	<td><div id="LC54"><input type="range" min="0" max="100" id="LCConeIn"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="LC61">Dir &phi;</div></td>
+			  	<td><div id="LC62"><input type="range" min="-180" max="180" id="LCDirPhi"></div></td>
+			  	<td colspan="2">&nbsp;</td>
+			  </tr>
+			 </table>
+			</div>
+			  	</td>
+			  	<td><div id="A11"><b>Type</b></div></td>
+			  	<td><div id="A12"><select id="ambientType" onchange="showHideUI(this.id,this.value);">
+				  <option value="none">None</option>
+				  <option value="ambient">Ambient</option>
+				  <option value="hemispheric">Hemispheric</option>
+				  <option value="SH">Spherical Harm.</option>
+				</select></div></td>
+			  	<td><div id="D11"><b>Type</b></div></td>
+			  	<td><div id="D12"><select id="diffuseType" onchange="showHideUI(this.id,this.value);">
+				  <option value="none">None</option>
+				  <option value="lambert">Lambert</option>
+				  <option value="toon">Toon</option>
+				  <option value="orenNayar">Oren-Nayar</option>
+				</select></div></td>
+			  	<td><div id="S11"><b>Type</b></div></td>
+			  	<td><div id="S12"><select id="specularType" onchange="showHideUI(this.id,this.value);">
+				  <option value="none">None</option>
+				  <option value="phong">Phong</option>
+				  <option value="blinn">Blinn</option>
+				  <option value="toonP">Toon (Phong)</option>
+				  <option value="toonB">Toon (Blinn)</option>
+				  <option value="ward">Ward</option>
+				  <option value="cookTorrance">Cook-Torrance (M.F.+S.)</option>
+				  <option value="cookTorranceGGX">Cook-Torrance (GGX)</option>
+				</select></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="A20">Upper Color</div><div id="A21">Color</div></td>
+			  	<td><div id="A22"><input type="color" id="ambientLightColor" value="#222222"></div></td>
+			  	<td><div id="D21">Color</div></td>
+			  	<td><div id="D22"><input type="color" id="diffuseColor" value="#00ffff"></div></td>
+			  	<td><div id="S21">Color</div></td>
+			  	<td><div id="S22"><input type="color" id="specularColor" value="#ffffff"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="A30">Left color</div><div id="A31">Dir &theta;</div></td>
+			  	<td><div id="A32"><input type="range" min="0" max="180" id="ADirTheta"></div><div id="A33"><input type="color" id="SHLeftLightColor" value="#550055"></div></td>
+			  	<td><div id="D31">Texture</div></td>
+			  	<td><div id="D32"><input type="range" min="0" max="100" id="DTexMix"></div></td>
+			  	<td><div id="S31">Shiny &gamma;</div><div id="S31b">Roughness</div></td>
+			  	<td><div id="S32"><input type="range" min="1" max="200" id="SpecShine"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="A40">Right color</div><div id="A41">Dir &phi;</div></td>
+			  	<td><div id="A42"><input type="range" min="-180" max="180" id="ADirPhi"></div><div id="A43"><input type="color" id="SHRightLightColor" value="#005555"></div></td>
+			  	<td><div id="D41">Toon thr.</div><div id="D41b">Roughness</div></td>
+			  	<td><div id="D42"><input type="range" min="0" max="100" id="DToonTh"></div></td>
+			  	<td><div id="S41">Toon thr.</div><div id="S41b">Fresnel</div><div id="S41c">Anisotrop. Amnt.</div></td>
+			  	<td><div id="S42"><input type="range" min="0" max="100" id="SToonTh"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="A50">Front color</div><div id="A51">Lower color</div></td>
+			  	<td><div id="A52"><input type="color" id="ambientLightLowColor" value="#002200"></div></td>
+			  	<th>Mat. Emission</th>
+			  	<td><div id="E12"><select id="emissionType" onchange="showHideUI(this.id,this.value);">
+				  <option value="No">No</option>
+				  <option value="Yes">Yes</option>
+				</select></div></td>
+			    <td><div id="S51a">Specularity</div><div id="S51b">Angle</div></td><td><div id="S52"><input type="range" min="0" max="100" id="SspecKwAng"></div></td>
+			  </tr>
+			  <tr>
+			  	<td><div id="MA1">Mat. Amb. Col.</div></td>
+			  	<td><div id="MA2"><input type="color" id="ambientMatColor" value="#00ffff"></div></td>
+			  	<td><div id="ME1">Emit</div></td>
+			  	<td><div id="ME2"><input type="color" id="emitColor" value="#000000"></div></td>
+			  	<td>&nbsp;</td><td>&nbsp;</td>
+			  </tr>
+			</table>
+		</center>
+	</body>
+
+</html>

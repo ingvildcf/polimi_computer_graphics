@@ -1,4 +1,3 @@
-	//using namespace glm;
 	
 	// Globals
 	glm::mat4 I(1); // Identity matrix
@@ -26,8 +25,8 @@
 	glm::vec3 centerPoint2(1);
 
 	glm::mat4 T3 = glm::translate(I, centerPoint2);
-	glm::mat4 S3 = glm::scale(I, glm::vec3(1, -1, 1)); // Mirror
 	glm::mat4 R3 = glm::rotate(I, glm::radians(15.0f), xAxis);
+	glm::mat4 S3 = glm::scale(I, glm::vec3(1, -1, 1)); // Mirror
 	glm::mat4 MT3 = T3*R3*S3*glm::inverse(R3)*glm::inverse(T3);
 
 
@@ -36,7 +35,5 @@
 	glm::mat4 T4 = glm::translate(I, t); // Inverse is -t
 	glm::mat4 R4 = glm::rotate(I, glm::radians(30.0f), yAxis);
 	glm::mat4 S4 = glm::scale(I, glm::vec3(3));
-	//glm::mat4 MT4 = glm::inverse(T4*R4*S4);
-	//glm::mat4 MT4 = glm::inverse(S4)*glm::inverse(R4)*glm::inverse(T4);
-	glm::mat4 MT4 = glm::inverse(T4)*glm::inverse(R4)*glm::inverse(S4); // This works hmmm
+	glm::mat4 MT4 = glm::inverse(T4)*glm::inverse(R4)*glm::inverse(S4); 
 

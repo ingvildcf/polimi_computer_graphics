@@ -15,6 +15,7 @@ glm::mat4 LookInDirMat(glm::vec3 Pos, glm::vec3 Angs) {
 	glm::mat4 R_z = glm::rotate(I, -Angs.z, zAxis);
 
 	glm::mat4 M_V = R_z*R_x*R_y*T;
+
 	return M_V;
 }
 
@@ -22,11 +23,14 @@ glm::mat4 LookInDirMat(glm::vec3 Pos, glm::vec3 Angs) {
  // Pos    -> Position of the camera (c)
  // aim    -> Posizion of the target (a)
  // Roll   -> roll (rho)
- glm::vec3 u = yAxis;
+ 
+ glm::vec3 up = yAxis; // Up vector
 
 glm::mat4 LookAtMat(glm::vec3 Pos, glm::vec3 aim, float Roll) {
+	
 	glm::mat4 R = glm::rotate(I, glm::radians(Roll), yAxis);
-	glm::mat4 M_V = R*glm::lookAt(Pos, aim, u);
+	glm::mat4 M_V = R*glm::lookAt(Pos, aim, up);
+
 	return M_V;
 }
 

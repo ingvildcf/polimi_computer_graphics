@@ -1,19 +1,7 @@
+#include <math.h>
+
 glm::mat4 I = glm::mat4(1.0f);
 glm::vec3 yAxis = glm::vec3(0,1,0);
-
-std::vector<tinyobj::real_t> nodeCircle(int n, float r, glm::vec4 center){
-    std::vector<tinyobj::real_t> vertices(3*n);
-    glm::vec3 vertex; 
-    glm::mat4 R;
-    float angle = glm::radians(360.0f/n);
-
-    for(int i = 0; i < n; i++) {
-        R = glm::rotate(I, angle, yAxis);
-        vertex = center + R*glm::vec4(r,0,0,1);
-        vertices.push_back(vertex);
-    }
-    return vertices;
-}
 
 // this function creates the geometries to be shown, and output thems
 // in global variables M1_vertices and M1_indices to M4_vertices and M4_indices
@@ -23,30 +11,11 @@ void makeModels() {
 
 // Resizes the vertices array. Repalce the values with the correct number of
 // vertices components (3 * number of vertices)
-M1_vertices.resize(3 * 8);
-M1_vertices = {0,0,0, 0,0,1, 0,1,1, 0,1,0, 1,0,0, 1,0,1, 1,1,1, 1,1,0};
+    M1_vertices.resize(3 * 8);
+    M1_vertices = {0,0,0, 0,0,1, 0,1,1, 0,1,0, 1,0,0, 1,0,1, 1,1,1, 1,1,0};
 
 
-//for (int i = 0; i < 8; i++){
-//    for (int j = 0; j < 3; j++){
-//        if (j == 0){
-//            if (i < 4){
-//                M1_vertices[3*i+j] = 0;
-//            }
-//        }
-//        else if (j == 1){
-//            if (i == 2 || i == 3 || i == 6 || i == 7){
-//                M1_vertices[3*i+j] = 0;
-//            }
-//        }
-//        else if (j == 2){
-//            if (i == 0 || i == 3 || i == 4 || i == 7){
-//                M1_vertices[3*i+j] = 0;
-//            }
-//        }
-//        else M1_vertices[3*i+j] = 1;
-//    }
-//}
+
 
 
 // Resizes the indices array. Repalce the values with the correct number of
@@ -61,39 +30,48 @@ M1_indices = {0,1,2, 2,3,0, 0,3,4, 4,3,7, 5,6,7, 7,4,5, 1,6,5, 1,2,6, 7,6,2, 3,2
 
 // Resizes the vertices array. Repalce the values with the correct number of
 // vertices components (3 * number of vertices)
-M2_vertices.resize(12);
 
-glm::mat4 I = glm::mat4(1.0f);
-glm::vec3 yAxis = glm::vec3(0, 1, 0);
+int n = 72;
+float r = 0.5;
+float h = 6.0;
 
-int n = 32;
-float r = 0.3;
-glm::vec4 c = glm::vec4(0,0,0,1);
-M2_vertices = nodeCircle(n, r, c);
+float alpha = glm::radians(360.0/n);
 
-//M2_square = {0,0,0, 0,0,1, 0,1,1, 0,1,0};
-//M2_square_prev = M2_square;
-glm::mat4 R = glm::rotate(I, glm::radians(10.0f), yAxis);
-//M2_square = R * M2_square_prev;
+M2_vertices.resize((n + 1)*3*2);
 
-// Vertices definitions
-M2_vertices[0]  =  0.0;
-M2_vertices[1]  = -1.0;
-M2_vertices[2]  = -1.1;
-M2_vertices[3]  =  1.0;
-M2_vertices[4]  =  0.0;
-M2_vertices[5]  = -1.1;
-M2_vertices[6]  =  0.0;
-M2_vertices[7]  =  1.0;
-M2_vertices[8]  = -1.1;
-M2_vertices[9]  = -1.0;
-M2_vertices[10] =  0.0;
-M2_vertices[11] = -1.1;
+// Vertices definitions 
+int v = 0; 
+
+// Triangle fan 1
+for (int i = 0; i < n + 1; i++){
+    M2_vertices[v] = r*glm::cos(alpha*i);
+    M2_vertices[v + 1] = 0.0;
+    M2_vertices[v + 2] = r*glm::sin(alpha*i);
+    v += 3;
+}
+
+// Triangle fan 2
+//t = 3*(n + 1);
+for (int i = 0; i < n + 1; i++){
+    M2_vertices[v] = r*glm::cos(alpha*i);
+    M2_vertices[v + 1] = 0.0;
+    M2_vertices[v + 2] = r*glm::sin(alpha*i);
+    v += 3;
+}
+// Center roof
+M2_vertices[0] = 0.0;
+M2_vertices[1] = 0.0;
+M2_vertices[2] = 0.0;
+
+// Center bottom
+M2_vertices[v + 1] = 0.0;
+M2_vertices[v + 2] = 1.0;
+M2_vertices[v + 3] = 0.0;
 
 
 // Resizes the indices array. Repalce the values with the correct number of
 // indices (3 * number of triangles)
-M2_indices.resize(6);
+M2_indices.resize(3*(n + 1)*5);
 
 // indices definitions
 M2_indices[0] = 0;
@@ -118,9 +96,48 @@ M2_indices[5] = 0;
 
 // Resizes the vertices array. Repalce the values with the correct number of
 // vertices components (3 * number of vertices)
-M3_vertices.resize(9);
+
+// TRY ME http://www.songho.ca/opengl/gl_sphere.html
+
+
+M3_vertices.resize(9); //9
+
+for (int sphere_row = 0; sphere_row < 10; sphere_row++){
+    for (int sphere_col = 0; sphere_col < 10; sphere_col++){
+        M3_vertices[sphere_row][sphere_col] = 
+    }
+    
+}
+
+/* Function to return a circle with centrum c, radius r of n vertices */
+std::vector<tinyobj::real_t> vertexCircle(float r, std::vec3 c, int n){
+    std::vector<tinyobj::real_t> vertex_circle;
+    float angle = glm::rad(360.0f/n);
+
+    for(int i = 0; i < 3*n; i++) {
+        if ((i+1) % 3 == 0){ // z coordinate
+            vertex_circle[i] = c.z;
+        }
+        else if (i == 0 || i % 3 == 0){ // x coordinate
+            vertex_circle[i] = c.x +  + r * cos(i*angle);
+        }
+        else{ // y coordinate
+            vertex_circle[i] = c.y + r * sin(i*angle); 
+        }
+    }
+    return vertex_circle;
+}
+
+int n = 10;
+float r = 1;
+std::vec3 c = {0,0,0};
+
+std::vector<tinyobj> top_circle = vertexCircle(r, c, n);
+
+
 
 // Vertices definitions
+/*
 M3_vertices[0]  =  0.0;
 M3_vertices[1]  =  1.0;
 M3_vertices[2]  = -1.2;
@@ -130,7 +147,10 @@ M3_vertices[5]  = -1.2;
 M3_vertices[6]  =  0.866;
 M3_vertices[7]  = -0.5;
 M3_vertices[8]  = -1.2;
+*/
 
+
+M3_vertices.resize(3*200);
 
 // Resizes the indices array. Repalce the values with the correct number of
 // indices (3 * number of triangles)

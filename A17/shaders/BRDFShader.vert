@@ -1,23 +1,26 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
-layout(binding = 0) uniform UniformBufferObject {
+
+layout(binding = 0) uniform UniformBufferObject {
 	mat4 mvpMat;
 	mat4 mMat;
 	mat4 nMat;
 } ubo;
 
 /**** Modify from here *****/
-vec3 inPosition;
-vec2 inTexCoord;
-vec3 inNormal;
 
-vec3 fragPos;
-vec3 fragNorm;
-vec2 fragTexCoord;
+layout(location = 0) in vec3 inPosition;
+layout(location = 2) in vec2 inTexCoord;
+layout(location = 1) in vec3 inNormal;
+
+layout(location = 0) out vec3 fragPos;
+layout(location = 1) out vec3 fragNorm;
+layout(location = 2) out vec2 fragTexCoord;
 
 /**** To here *****/
 
-void main() {
+
+void main() {
 	gl_Position = ubo.mvpMat * vec4(inPosition, 1.0);
 	fragPos = (ubo.mMat * vec4(inPosition, 1.0)).xyz;
 	fragNorm = mat3(ubo.nMat) * inNormal;
